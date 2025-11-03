@@ -1,0 +1,5 @@
+{
+  "name": "LLM Prompt Optimizer",
+  "description": "An intelligent prompt optimizer that tailors your prompts for specific LLMs like Gemini, Claude (Anthropic), and ChatGPT using advanced prompt engineering techniques.",
+  "requestFramePermissions": []
+}

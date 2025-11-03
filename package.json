@@ -1,0 +1,59 @@
+{
+  "name": "llm-prompt-optimizer",
+  "version": "1.0.0",
+  "description": "AI-powered prompt optimizer for multiple LLMs (Gemini, Claude, ChatGPT, Llama). Transform basic prompts into highly effective, structured prompts using advanced prompt engineering techniques.",
+  "type": "module",
+  "author": "Nuno Salvação <nexo-modeling@outlook.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nsalvacao/llm-prompt-optimizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nsalvacao/llm-prompt-optimizer/issues"
+  },
+  "homepage": "https://github.com/nsalvacao/llm-prompt-optimizer#readme",
+  "keywords": [
+    "llm",
+    "prompt-engineering",
+    "ai",
+    "gemini",
+    "claude",
+    "chatgpt",
+    "llama",
+    "prompt-optimizer",
+    "openai",
+    "anthropic",
+    "react",
+    "typescript",
+    "vite"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "echo 'No linter configured yet'"
+  },
+  "dependencies": {
+    "@google/genai": "^1.28.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^27.1.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^4.0.6"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
