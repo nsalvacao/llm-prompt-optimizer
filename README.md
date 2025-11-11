@@ -1,291 +1,127 @@
-# 🚀 LLM Prompt Optimizer
+# LLM Prompt Optimizer
 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8_strict-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6.2-646cff?logo=vite)](https://vitejs.dev/)
-[![Tests](https://img.shields.io/badge/Tests-7_passing-brightgreen?logo=vitest)](App.test.tsx)
-[![Coverage](https://img.shields.io/badge/Coverage-roadmap_80%25-yellow)]()
-[![Security](https://img.shields.io/badge/npm_audit-0_vulnerabilities-brightgreen?logo=npm)]()
-[![GDPR](https://img.shields.io/badge/GDPR-Art._25_compliant-success)]()
-[![Node](https://img.shields.io/badge/Node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+> Transform draft prompts into production-grade instructions tailored to Gemini, Claude, ChatGPT, or Llama—directly from a focused React + Vite workspace.
 
-**🌐 [View Landing Page](https://nsalvacao.github.io/llm-prompt-optimizer/)**
+## Table of Contents
+1. [Overview](#overview)
+2. [Key Capabilities](#key-capabilities)
+3. [Architecture](#architecture)
+4. [Project Structure](#project-structure)
+5. [Getting Started](#getting-started)
+6. [Configuration Reference](#configuration-reference)
+7. [Usage Workflow](#usage-workflow)
+8. [Testing & Quality](#testing--quality)
+9. [Tech Stack](#tech-stack)
+10. [Roadmap](#roadmap)
+11. [License](#license)
+12. [Maintainer](#maintainer)
 
-**Production-grade prompt optimization platform for multi-LLM orchestration, governance patterns, and cost-aware routing in enterprise AI teams.**
+## Overview
+LLM Prompt Optimizer is a single-page React application that rewrites user prompts using provider-specific optimization frameworks. It persists preferences in local storage, guides users through template-based drafting, and calls either Google Gemini or a user-specified OpenAI-compatible endpoint to deliver deterministic, structured prompts for downstream work.
 
-Meta-LLM approach using specialized optimization frameworks per target model (Gemini, Claude, ChatGPT, Llama). Type-safe architecture, browser-first privacy compliance (GDPR Art. 25), extensible design patterns for consultancy accelerators and rapid client delivery.
+## Key Capabilities
+- **Template-first ideation**: Built-in prompt templates (content, code, SQL, marketing) seed variables with double-curly placeholders for fast iteration.
+- **LLM-aware rewriting**: Switch between Gemini, Anthropic Claude, OpenAI ChatGPT, or Meta Llama instruction sets; each path loads a bespoke system prompt crafted for that model family.
+- **Contextual variables**: The UI extracts `{{placeholders}}` and renders inline inputs so users can merge contextual data without editing the template manually.
+- **History & favorites**: Every optimization run is timestamped, saved locally, filterable via a search bar, and can be pinned for quick reuse.
+- **Settings modal**: Configure provider, temperature, API keys, and OpenAI-compatible endpoints without touching code; values persist across sessions via `localStorage`.
+- **Copy + reuse flows**: Copy either the source or optimized prompt to the clipboard, or reuse a past optimization as the next input in a single click.
 
----
+## Architecture
+| Layer | Responsibilities | Key Files |
+| --- | --- | --- |
+| Presentation | React components with Tailwind-inspired utility classes render the editor, templates, and history tabs. | `App.tsx`, `SettingsModal.tsx`, `index.tsx`, `index.html` |
+| Domain logic | LLM selection, progress indicators, variable parsing, clipboard helpers, and persistent history management. | `App.tsx`, `useSettings.ts` |
+| Services | Provider-specific prompt optimization via Google Gemini SDK or generic OpenAI-compatible HTTP calls. | `services/geminiService.ts` |
+| Configuration & typing | Enumerations, prompt templates, reusable constants, and shared TypeScript types. | `constants.tsx`, `types.ts`, `vite.config.ts`, `tsconfig.json` |
 
-## 🧭 Executive Snapshot
+High-level flow:
+1. User selects a template or writes a raw prompt.
+2. Variable placeholders materialize as inputs; values hydrate the final string before the API call.
+3. Settings modal supplies API credentials and sampling temperature.
+4. `optimizePrompt` builds a provider-specific system instruction and calls Gemini or an OpenAI-compatible endpoint (Claude, ChatGPT, Llama wrappers).
+5. The rewritten prompt is rendered, saved to history, and optionally marked as favorite or copied.
 
-**Challenge:** Multi-client teams require consistency across Gemini, Claude, ChatGPT, and Llama deployments without vendor lock-in or proprietary tooling dependencies.
-
-**Approach:** Modular OSS architecture (`services/geminiService.ts`, `constants.tsx`, `useSettings.ts`) with governance, FinOps optimization, and rapid iteration cycles for enterprise rollout.
-
-### 📈 Results (6-Week Pilot, 12 Users)
-
-| Metric | Baseline | With Optimizer | Improvement |
-|--------|----------|----------------|-------------|
-| **Prompt iteration time** | 15-20min/revision | 8-12min | **~42% reduction** |
-| **Onboarding per user** | 30min training | <5min self-service | **83% faster** |
-| **Infrastructure cost** | €49-99/mo (SaaS alternatives) | €0 (browser-only) | **100% savings** |
-| **GDPR compliance** | Manual review required | Built-in (Art. 25) | **Zero audit findings** |
-
-> SaaS benchmark: Claude Teams (€49/user/mo), ChatGPT Team (€25/user/mo).
-
----
-
-## 🏢 Enterprise Value Proposition
-
-| Category | Key Benefits | Implementation |
-|----------|--------------|----------------|
-| **Governance & Compliance** | Version-controlled templates, zero server-side data handling (GDPR Art. 25), foundation for Langfuse/Helicone integration | `constants.tsx` for policies, browser-only processing |
-| **Team Enablement** | <5min onboarding for non-technical users, eliminates LLM specialist dependency, zero licensing costs | History + favorites + variable templating |
-| **FinOps & Multi-Provider** | Cost-aware routing, per-client/team policy enforcement, ready for LiteLLM/OpenRouter integration | `useSettings.ts` for persistence, provider abstraction |
-| **OSS Accelerator** | Modern React UI, decoupled service layer, templates easily adapted to internal policies | Adaptation: 2h-1 day per client |
-
-**Adaptation Examples:**
-- **Legal firms:** Custom compliance disclaimers (~3h setup)
-- **SaaS startups:** Multi-language + cost routing (~1 day)
-- **Marketing agencies:** White-label UI + client tone templates (~2h/client)
-
----
-
-## 📘 Documentation
-
-| Resource | Description | Audience |
-|----------|-------------|----------|
-| **[Enterprise Rollout Playbook](docs/playbooks/enterprise-rollout.md)** | 1-week roadmap for prompt governance rollout | Product/AI Leads |
-| **[ADR-001: Browser-Only Architecture](docs/playbooks/adr-001-browser-only.md)** | GDPR compliance, cost optimization, deployment simplicity | Engineering, Compliance |
-| **[ADR-002: Discriminated Unions](docs/playbooks/adr-002-discriminated-unions.md)** | Type-safe provider switching, compile-time validation | TypeScript developers |
-| **[ADR-003: Gemini as Meta-LLM](docs/playbooks/adr-003-gemini-meta-llm.md)** | Cost analysis, quality parity, provider selection rationale | AI/ML teams |
-
----
-
-## ✨ Core Capabilities
-
-| Feature | Description |
-|---------|-------------|
-| **Multi-LLM Support** | Optimization frameworks for Gemini, Claude, ChatGPT, Llama |
-| **Meta-Optimization** | Gemini 2.5 Pro (or OpenAI-compatible API) with specialized system instructions per target LLM |
-| **Template Library** | Pre-built templates for content creation, code generation, marketing copy |
-| **Variable System** | Automatic detection and substitution of `{{variable}}` patterns |
-| **History & Favorites** | Persistent tracking with search and curation capabilities |
-| **Flexible Configuration** | Gemini API or any OpenAI-compatible endpoint |
-| **Local-First Architecture** | All data in browser localStorage (zero backend dependency) |
-
----
-
-## 🏗️ Architecture
-
-### System Flow
-
-```mermaid
-graph LR
-    A[User Input] --> B[Variable Detection]
-    B --> C[Variable Substitution]
-    C --> D{Provider Router}
-    D -->|Gemini| E[Gemini SDK]
-    D -->|OpenAI-compatible| F[HTTP Fetch]
-    E --> G[System Instruction Selection]
-    F --> G
-    G -->|Claude| H[XML-based Framework]
-    G -->|Gemini| I[Persona Framework]
-    G -->|ChatGPT| J[CoT Framework]
-    G -->|Llama| K[Direct Framework]
-    H --> L[Meta-LLM Processing]
-    I --> L
-    J --> L
-    K --> L
-    L --> M[Optimized Prompt]
-    M --> N[Quality Check]
-    N --> O[History Storage]
+## Project Structure
+```
+.
+├── App.tsx                 # Main UI and workflow logic
+├── SettingsModal.tsx      # Provider + temperature configuration modal
+├── constants.tsx          # LLM options and prompt templates
+├── services/
+│   └── geminiService.ts   # Provider-specific optimization service
+├── types.ts               # Shared enums and domain types
+├── useSettings.ts         # LocalStorage-backed settings hook
+├── index.tsx / index.html # Vite entry point
+├── docs/                  # Documentation & showcase assets (webpage lives here)
+├── package.json           # Scripts and dependency manifest
+└── vite.config.ts         # Build tooling
 ```
 
-### Key Architectural Decisions
-
-| ADR | Decision | Rationale | Trade-Off |
-|-----|----------|-----------|-----------|
-| **[ADR-001](docs/playbooks/adr-001-browser-only.md)** | Browser-only architecture (localStorage) | GDPR Art. 25 compliance, €0 infrastructure cost, instant deployment | ❌ No real-time collaboration → ✅ Optional backend mode (Q2 2025 roadmap) |
-| **[ADR-002](docs/playbooks/adr-002-discriminated-unions.md)** | TypeScript discriminated unions for providers | Compile-time enforcement, 40% fewer misconfigurations | ❌ Verbose type definitions → ✅ Self-documenting code + IDE autocomplete |
-| **[ADR-003](docs/playbooks/adr-003-gemini-meta-llm.md)** | Gemini 2.5 Pro as default meta-LLM | 65% cost reduction vs GPT-4, free tier for pilots, quality parity | ❌ Google infrastructure dependency → ✅ Built-in OpenAI fallback |
-
-**Extensibility:**
-- **Add new target LLM:** 1 file change (`services/geminiService.ts` + system instruction)
-- **White-label customization:** <2 hours (templates in `constants.tsx`, Tailwind config)
-
----
-
-## 📊 Quality & Observability
-
-### Current Tracking
-
-| Metric | Method | Status |
-|--------|--------|--------|
-| Prompt length optimization | Before/after character count | ✅ Implemented |
-| Variable detection accuracy | Regex pattern validation | ✅ Implemented |
-| Provider response latency | Client-side timing | ✅ Basic (console) |
-| Optimization success rate | History + favorites curation | ✅ Implicit |
-
-### Roadmap: Production-Grade Observability (Q1 2025)
-
-**Integration:** Langfuse / Helicone for trace-level analysis
-
-```typescript
-// Planned: Langfuse integration
-import { Langfuse } from 'langfuse'
-
-const trace = langfuse.trace({
-  name: 'prompt-optimization',
-  metadata: { targetLLM: LLM.CLAUDE, originalLength: originalPrompt.length }
-})
-
-trace.score({
-  name: 'optimization-quality',
-  value: calculateQualityScore(original, optimized)
-})
-```
-
-**Target SLOs:**
-- P50 Latency: <3s | P95 Latency: <8s
-- Quality Score: >85% structural compliance
-- Cost per Optimization: ~$0.001-0.003 (Gemini free tier)
-
----
-
-## 🎬 Quick Start
-
+## Getting Started
 ### Prerequisites
-
 - Node.js 18+ and npm 9+
-- Gemini API key (free at [Google AI Studio](https://aistudio.google.com/apikey)) _OR_ OpenAI-compatible API
+- A Google Gemini API key (required by default) and/or an OpenAI-compatible API key if you plan to switch providers.
 
 ### Installation
-
 ```bash
-# Clone and install
 git clone https://github.com/nsalvacao/llm-prompt-optimizer.git
 cd llm-prompt-optimizer
 npm install
+```
 
-# Configure API key
-cp .env.example .env.local
-# Edit .env.local: GEMINI_API_KEY=your_key_here
+### Local Development
+```bash
+npm run dev       # Starts Vite with hot module reload on http://localhost:5173
+npm run build     # Produces an optimized bundle in dist/
+npm run preview   # Serves the production build locally
+```
 
-# Start dev server
+## Configuration Reference
+| Setting | Where to configure | Notes |
+| --- | --- | --- |
+| `Gemini API Key` | Settings modal (`provider: gemini`) or `.env` variable `API_KEY` read during build | Required for default Gemini mode; stored locally only if user provides it in the modal. |
+| `OpenAI API Key` | Settings modal when `provider: openai` | Mandatory when switching to ChatGPT-compatible mode. |
+| `OpenAI Base URL` | Settings modal (`https://api.openai.com/v1` by default) | Point this to any compatible endpoint (e.g., Azure OpenAI, LocalAI). |
+| `OpenAI Model` | Settings modal (`gpt-4o` default) | Set to the deployed model ID. |
+| `Temperature` | Slider inside the modal | Shared across providers; persisted in `localStorage`. |
+
+To preload secrets during development, you can export them before running Vite:
+```bash
+export API_KEY="<your_gemini_key>"
 npm run dev
 ```
 
-Application available at **http://localhost:3000**
+## Usage Workflow
+1. Launch the app (`npm run dev`) and open the Settings modal to confirm provider, API keys, and temperature.
+2. Pick a template or paste your own prompt. Any `{{variable}}` tokens automatically surface as inline inputs—fill them to hydrate the prompt.
+3. Choose the target LLM; the UI highlights the active provider and loads its optimization framework.
+4. Click **Optimize**. A progress bar animates while `services/geminiService.ts` issues the API call and enforces anti-hallucination guardrails.
+5. Review the optimized prompt, copy it, or store it as a favorite. History entries can be searched, filtered, reused, or toggled between “All” and “Favorites”.
 
-### Alternative: OpenAI-Compatible API
+## Testing & Quality
+- `npm run test` runs the Vitest suite (see `App.test.tsx` for starter coverage).
+- Add component-level tests alongside their modules (e.g., `App.test.tsx`).
+- Manual QA checklist:
+  - Verify provider switching (Gemini ↔ OpenAI) and API validation messages.
+  - Confirm placeholders expand correctly after editing template text.
+  - Ensure history persists between reloads and favorites stay pinned.
 
-1. Start app: `npm run dev`
-2. Open Settings (⚙️ icon)
-3. Select **OpenAI** provider
-4. Enter Base URL (`https://api.openai.com/v1`), API Key, Model (`gpt-4`)
-5. Save (persists in localStorage)
+## Tech Stack
+- **Framework**: React 19 + TypeScript, bundled by Vite 6.
+- **UI Patterns**: Utility-first CSS classes (Tailwind-style) embedded directly in JSX.
+- **AI SDKs**: `@google/genai` for Gemini; native `fetch` for OpenAI-compatible chat completions.
+- **State & Storage**: React hooks + `localStorage` for history and settings persistence.
+- **Testing**: Vitest + Testing Library + jsdom.
 
----
+## Roadmap
+1. Add granular provider adapters (e.g., Anthropic SDK, Groq) instead of routing everything through Gemini/OpenAI code paths.
+2. Persist history/favorites to IndexedDB or a lightweight backend for multi-device continuity.
+3. Ship downloadable prompt packs and allow importing/exporting history as JSON.
+4. Integrate linting/formatting (ESLint + Prettier) and add CI via GitHub Actions.
 
-## 📖 Usage
+## License
+Distributed under the [MIT License](LICENSE).
 
-### Basic Workflow
-
-1. **Enter prompt** (or select template)
-2. **Fill variables** (`{{variable}}` auto-detected)
-3. **Select target LLM** (Gemini/Claude/ChatGPT/Llama)
-4. **Optimize** (AI rewrites using best practices)
-5. **Review & iterate** (copy, re-optimize, save to favorites)
-
-### Example Transformation
-
-| Aspect | Original | Optimized (Claude) | Delta |
-|--------|----------|-------------------|-------|
-| **Input** | `Write a blog post about AI` | XML-structured with `<task>`, `<requirements>`, `<constraints>` | +1,221 chars |
-| **Structure elements** | 0 (plain text) | 4 sections (task, requirements, constraints, output_format) | ∞ |
-| **Anti-hallucination** | None | Explicit `CRITICAL: Do not invent statistics...` | ✅ Added |
-| **Claude optimization score** | ~30% (generic) | ~92% (XML best practices) | +207% |
-
-Full example in [Usage Documentation](docs/usage-examples.md).
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| **Frontend** | React 19 + TypeScript 5.8 (strict) | Component architecture, type safety |
-| **Build** | Vite 6.2 | Optimized production builds |
-| **Styling** | Tailwind CSS | Utility-first, zero CSS files |
-| **LLM Integration** | `@google/genai` SDK, Fetch API | Gemini native + OpenAI-compatible |
-| **State** | React hooks + localStorage | Persistent settings/history |
-| **Testing** | Vitest + Testing Library | 7 passing smoke tests |
-
----
-
-## ⚠️ Known Limitations & Roadmap
-
-| Limitation | Impact | Resolution | ETA |
-|------------|--------|-----------|-----|
-| **Browser-only storage** | No real-time collaboration | PostgreSQL + pgvector backend | Q2 2025 |
-| **Manual quality assessment** | Subjective evaluation | RAGAS-style automated scoring | Q1 2025 |
-| **Limited observability** | Console-only tracking | Langfuse/Helicone integration | Q1 2025 |
-| **Single-user focus** | No team management | Multi-tenant workspaces + RBAC | Q3 2025 |
-
-### Technical Debt
-
-- Test Coverage: 7 smoke tests → target 80% with integration tests
-- Linting: Add Prettier + ESLint (Airbnb style guide)
-- Error Handling: Structured error types + recovery strategies
-
-### Evolution Roadmap
-
-**Q1 2025:** Production-grade quality (RAGAS evaluation, Langfuse observability, 80% test coverage)
-**Q2 2025:** Team & automation (optional backend, GitHub Action, multi-tenant workspaces)
-**Q3 2025:** Enterprise features (SSO/SAML, custom model fine-tuning, analytics dashboard)
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Submit issues or pull requests.
-
-**Development:**
-1. Fork repository
-2. Create feature branch: `git checkout -b feature/enhancement-name`
-3. Commit: `git commit -m 'Add specific enhancement'`
-4. Push: `git push origin feature/enhancement-name`
-5. Open Pull Request
-
-**Code Style:** 4-space indentation, no semicolons, TypeScript strict mode, functional components + hooks, PascalCase components, camelCase functions.
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file.
-
----
-
-## 🙏 Acknowledgments
-
-Built with [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/), powered by [Google Gemini API](https://ai.google.dev/), styled with [Tailwind CSS](https://tailwindcss.com/).
-
----
-
-📧 **Contact:** [nuno.salvacao@gmail.com](mailto:nuno.salvacao@gmail.com)
-🌐 **Portfolio:** [https://github.com/nsalvacao](https://github.com/nsalvacao)
-💼 **LinkedIn:** [https://www.linkedin.com/in/nsalvacao/](https://www.linkedin.com/in/nsalvacao/)
-
----
-
-<div align="center">
-
-**⭐ If this project helps you, consider giving it a star ⭐**
-
-Built as part of the **Nexo AI Solutions** ecosystem by [Nuno Salvação](https://github.com/nsalvacao)
-
-</div>
+## Maintainer
+Created and maintained by Nuno Salvação (<nexo-modeling@outlook.com>). Contributions and feedback are welcome via GitHub issues or pull requests.
